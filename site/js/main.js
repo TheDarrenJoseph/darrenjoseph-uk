@@ -30,6 +30,21 @@ function appendErrorMessage(message) {
   }
 }
 
+async function addCommonBodyContent() {
+  let rs = await fetch('includes/nav-header.html').catch(err => {
+    console.error(`Error while fetching nav header: ${err}`)
+  })
+
+  if (rs.ok) {
+    let element = document.body;
+    let content = await rs.text();
+    element.insertAdjacentHTML("afterbegin", content);
+    console.info("Nav header loaded.");
+  } else {
+    appendErrorMessage("Unable to fetch nav header");
+    console.error(`Unable to fetch nav header: ${rs.statusText} ${rs.body}`);
+  }
+}
 
 async function addCommonHeaderContent() {
   let rs = await fetch('includes/common-head.html').catch(err => {
@@ -37,9 +52,9 @@ async function addCommonHeaderContent() {
   })
 
   if (rs.ok) {
-    let headElement = document.head;
-
-    headElement.innerHTML += await rs.text();
+    let element = document.head;
+    let content = await rs.text();
+    element.insertAdjacentHTML("beforeend", content);
     console.info("Common header content loaded.");
   } else {
     appendErrorMessage("Unable to fetch common \<head\> content");
@@ -49,6 +64,7 @@ async function addCommonHeaderContent() {
 
 async function onPageLoad() {
   addCommonHeaderContent();
+  addCommonBodyContent();
   //timeBasedChanges();
 }
 

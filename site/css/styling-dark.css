@@ -30,6 +30,11 @@ body {
   text-decoration: none;
 }
 
+.projects-image {
+  width: 95%;
+  padding-bottom: 2rem;
+}
+
 /* For larger displays - desktop, tablet, etc */
 @media only screen and (min-width: 769px) {
   .content-body {
