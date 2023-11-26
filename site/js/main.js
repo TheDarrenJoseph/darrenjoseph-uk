@@ -65,6 +65,7 @@ async function addCommonHeaderContent() {
 async function onPageLoad() {
   addCommonHeaderContent();
   addCommonBodyContent();
+  // TODO implement local storage / consent banner
   //timeBasedChanges();
 }
 

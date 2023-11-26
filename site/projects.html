@@ -20,8 +20,8 @@
     <p>As this was a learner project it got a little messy as time went on, and I started to get frustrated at working in C++. Due to this I eventually decided that I'd rather try rebuilding it in <a href="https://www.rust-lang.org/">Rust</a> instead.</p>
     <p>This is how <a href="https://github.com/TheDarrenJoseph/ARQ-Rust">ARQ-Rust</a> got started</p>
     <p>Here are a few images from the most recent developer build. Please be aware I've never officially released ARQ, so they are very much WIP/Prototype examples just to give you an idea of the project:</p>
-    <img class="projects-image" src="img/arq-gameplay-1.png" alt="ARQ ">
-    <img class="projects-image" src="img/arq-inventory.png" alt="ARQ ">
+    <img class="projects-image" src="img/arq-gameplay-1.png" alt="ARQ Gameplay, on the map view">
+    <img class="projects-image" src="img/arq-inventory.png" alt="ARQ Gameplay, in the inventory view">
     <hr>
     <h2>ARQ-Rust - <a href="https://github.com/TheDarrenJoseph/ARQ-Rust">GitHub</a></h2>
     <p>In 2021, I learned about the Rust language for the first time. After reading about it, I was excited to give it a go as I could see it addressed some of my main frustrations around developing in C++.</p>
@@ -31,6 +31,13 @@
       <li>Cargo - Rust's built-in package manager provides a complete dependency management / build system out-of-the-box instead of needing to roll your own dependencies/Makefiles/CMake setup</li>
       <li>Explicit mutable/immutable referencing - which helps you to be clear around your intentions and avoid side effects when designing structs/traits. This also prevents you from concurrently modifying data and forces you to think about where to pass references or where to clone data (data boundaries).</li>
     </ul>
+    <hr>
+    <h2>purses - <a href="https://github.com/TheDarrenJoseph/purses/tree/master">GitHub</a></h2>
+    <p>purses (A portmanteau of PulseAudio and curses) is a text-based UI audio visualiser meant for Linux command-line usage</p>
+    <p>It hooks up to the <a href="https://en.wikipedia.org/wiki/PulseAudio">PulseAudio</a> sound server that is popular on Linux systems</p>
+    <p>More specifically it's written in C and uses my own implementation of the <a href="https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm">Cooley–Tukey FFT algorithm</a></p>
+    <p>This seemed line a fun way to learn about Digital Signal processing, and seemed like the perfect opportunity to write something in C</p>
+    <img class="projects-image" src="https://github.com/TheDarrenJoseph/purses/raw/master/example.png" alt="Running the purses audi visualiser locally in a bash terminal">
     <hr>
     <h2>This Site - <a href="https://github.com/TheDarrenJoseph/darrenjoseph-uk">darrenjoseph.uk (Github)</a></h2>
     <p>This site is technically also one of my personal projects!</p>

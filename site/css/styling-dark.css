@@ -35,6 +35,12 @@ body {
   padding-bottom: 2rem;
 }
 
+/* Always ensure badge sizing as they're not meant to stretch */
+.medium-badge {
+  width: 88px;
+  height: 31px;
+}
+
 /* For larger displays - desktop, tablet, etc */
 @media only screen and (min-width: 769px) {
   .content-body {
