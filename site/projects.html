@@ -9,7 +9,7 @@
 <body>
   <div class="content-body">
     <h1>My Projects</h1>
-    <h2>ARQ (ASCII Roguelike Quester) - <a href="https://github.com/TheDarrenJoseph/ARQ/">GitHub</a></h2>
+    <h2>ARQ (ASCII Roguelike Quester) and ARQ-Rust</h2>
     <p>Back in 2013, I started on one of my first personal programming projects. <a href="https://github.com/TheDarrenJoseph/ARQ/">ARQ (ASCII Roguelike Quester)</a></p>
     <p>I had played a bit of <a href="https://www.nethack.org/">Nethack</a> and some other text-based games and wanted to dive into the technical challenges of creating something similar, while learning some C++ along the way.</p>
     <p>I've learned quite a lot while working on this, particularly: </p>
@@ -17,20 +17,26 @@
       <li>Procedural map generation (with some help from an old colleague: <a href="https://github.com/christopherjsmith">Christopher J Harvey-Smith</a>)</li>
       <li>curses/<a href="https://en.wikipedia.org/wiki/Ncurses">ncurses</a> for developing text-based user interfaces</li>
     </ul>
-    <p>As this was a learner project it got a little messy as time went on, and I started to get frustrated at working in C++. Due to this I eventually decided that I'd rather try rebuilding it in <a href="https://www.rust-lang.org/">Rust</a> instead.</p>
+    <p>As this was a learner project it got a little messy as time went on, and I started to get frustrated at working in C++.</p>
+    <p>In 2021, I learned about the Rust language for the first time. After reading about it, I could see it addressed some of my main frustrations around developing in C++, so I was excited to give it a go by porting/re-implementing ARQ.</p>
     <p>This is how <a href="https://github.com/TheDarrenJoseph/ARQ-Rust">ARQ-Rust</a> got started</p>
-    <p>Here are a few images from the most recent developer build. Please be aware I've never officially released ARQ, so they are very much WIP/Prototype examples just to give you an idea of the project:</p>
-    <img class="projects-image" src="img/arq-gameplay-1.png" alt="ARQ Gameplay, on the map view">
-    <img class="projects-image" src="img/arq-inventory.png" alt="ARQ Gameplay, in the inventory view">
-    <hr>
-    <h2>ARQ-Rust - <a href="https://github.com/TheDarrenJoseph/ARQ-Rust">GitHub</a></h2>
-    <p>In 2021, I learned about the Rust language for the first time. After reading about it, I was excited to give it a go as I could see it addressed some of my main frustrations around developing in C++.</p>
     <p>Why I prefer Rust to C++:</p>
     <ul>
       <li>The borrow checker - ownership/borrowing avoids the chance of accidental runtime pointer errors, and removes to need to worry about memory management too much</li>
       <li>Cargo - Rust's built-in package manager provides a complete dependency management / build system out-of-the-box instead of needing to roll your own dependencies/Makefiles/CMake setup</li>
       <li>Explicit mutable/immutable referencing - which helps you to be clear around your intentions and avoid side effects when designing structs/traits. This also prevents you from concurrently modifying data and forces you to think about where to pass references or where to clone data (data boundaries).</li>
+      <li>Built-in unit test support</li>
     </ul>
+    <p>Moving over to Rust went really well, and I was able to redesign quite a lot of things from the ground up, and make some improvements on the original:</p>
+    <ul>
+      <li>Display management, ARQ-Rust now uses a "View" (complete UI control, I/O looping) and "Framehandler" (Dumb view that draws a model to a screen frame) system</li>
+      <li>An improved start/settings menu with custom widgets</li>
+      <li>Music support</li>
+    </ul>
+    <p>This is still under development currently, here are some developmental screenshots to give an idea of the project:</p>
+    <img class="projects-image" src="img/arq-gameplay-1.png" alt="ARQ Gameplay, on the map view">
+    <img class="projects-image" src="img/arq-inventory.png" alt="ARQ Gameplay, in the inventory view">
+    <img class="projects-image" src="img/arq-settings.png" alt="ARQ Settings Menu, showing fog-of-war, map random seed, and music volume settings.">
     <hr>
     <h2>purses - <a href="https://github.com/TheDarrenJoseph/purses/tree/master">GitHub</a></h2>
     <p>purses (A portmanteau of PulseAudio and curses) is a text-based UI audio visualiser meant for Linux command-line usage</p>
