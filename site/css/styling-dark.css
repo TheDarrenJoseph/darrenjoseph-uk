@@ -14,9 +14,28 @@ body {
   font-size: 1.12rem;
 }
 
-.nav-link {
-  color: white;
+a {
+  color: mediumseagreen;
+}
+
+a:link {
   text-decoration: none;
+}
+
+a:visited {
+  color: mediumpurple;
+  text-decoration: mediumpurple;
+}
+
+a:hover {
+  color: lightseagreen;
+  text-decoration: underline;
+  text-decoration-color: lightseagreen;
+}
+
+.nav-link {
+  color: white !important;
+  text-decoration: none !important;
 }
 
 .nav-spacer {
@@ -26,9 +45,10 @@ body {
 }
 
 .nav-link:hover {
-  color: green;
-  text-decoration: none;
+  color: green !important;
+  text-decoration: none !important;
 }
+
 
 .projects-image {
   width: 95%;
