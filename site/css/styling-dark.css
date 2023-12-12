@@ -36,12 +36,16 @@ a:hover {
 .nav-link {
   color: white !important;
   text-decoration: none !important;
+  padding-top: 0.25rem;
+  display: inline-flex;
 }
 
 .nav-spacer {
   display: inline;
   color: white;
   width: 1px;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .nav-link:hover {
