@@ -36,7 +36,9 @@ a:hover {
 .nav-link {
   color: white !important;
   text-decoration: none !important;
-  padding-top: 0.25rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  line-height: 1rem;
   display: inline-flex;
 }
 
