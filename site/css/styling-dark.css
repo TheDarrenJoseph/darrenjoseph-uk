@@ -36,6 +36,7 @@ a:hover {
 .nav-link {
   color: white !important;
   text-decoration: none !important;
+  font-family: sans-serif;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   line-height: 1rem;
