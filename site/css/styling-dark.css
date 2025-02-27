@@ -68,6 +68,34 @@ a:hover {
   height: 31px;
 }
 
+/* For icons in paragraphs/inline with text */
+.inline-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline;
+}
+
+.blog-post-card {
+  border: 0.1rem solid white;
+  padding: 1%;
+  margin-bottom: 1%;
+}
+
+.blog-post-card-date {
+  display: inline;
+  width: 45%;
+  color: silver;
+}
+
+.blog-post-card-link {
+  display: inline;
+  width: 45%;
+}
+
+.blog-post-card-description {
+  font-style: italic;
+}
+
 /* For larger displays - desktop, tablet, etc */
 @media only screen and (min-width: 769px) {
   .content-body {

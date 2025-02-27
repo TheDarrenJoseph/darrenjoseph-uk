@@ -31,7 +31,7 @@ function appendErrorMessage(message) {
 }
 
 async function addCommonBodyContent() {
-  let rs = await fetch('includes/nav-header.html').catch(err => {
+  let rs = await fetch('/includes/nav-header.html').catch(err => {
     console.error(`Error while fetching nav header: ${err}`)
   })
 
@@ -47,7 +47,7 @@ async function addCommonBodyContent() {
 }
 
 async function addCommonHeaderContent() {
-  let rs = await fetch('includes/common-head.html').catch(err => {
+  let rs = await fetch('/includes/common-head.html').catch(err => {
     console.error(`Error while fetching common \<head\> content: ${err}`)
   })
 
