@@ -62,6 +62,15 @@ a:hover {
   padding-bottom: 2rem;
 }
 
+.blog-image {
+    width: 95%;
+    padding-bottom: 2rem;
+}
+
+.blog-codeblock {
+    width: 95%;
+}
+
 /* Always ensure badge sizing as they're not meant to stretch */
 .medium-badge {
   width: 88px;

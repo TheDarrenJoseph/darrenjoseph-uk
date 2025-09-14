@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <title>Darren Joseph - ARQ-Rust Callback Redesign</title>
+    <script src="/js/main.js"></script>
+</head>
+
+<body>
+    <div class="content-body">
+        <div id="eea1ec61-7ae6-4dec-9c1b-1d1452437058" class="blog-post">
+            <h1>ARQ-Rust Callback Redesign</h1>
+            <h2>The Original UI setup</h2>
+            <p>Everything I talk about here is based on the code as of <a href="https://github.com/TheDarrenJoseph/ARQ-Rust/commit/302f2e96fbbd4eda26d1bf4fa057872707dff6b8">Commit 302f2e9</a></p>
+            <p>Recently I've been working on redesigning some of the UI structure for my ARQ-Rust project</p>
+            <p>Originally I used hierarchical pattern of Command -> View -> Framehandler. If we take the "Character Info" screen for example (which is responsible for displaying the player inventory / equipment / stats):</p>
+            <img class="blog-image" src="callback-character-info.png" alt="A screenshot of the old character info view"/>
+            <p>This window is displayed when you hit the 'i' key while looking at the map view. The input handling in the game engine then starts the <code>InventoryCommand</code>, which is given a copy of:</p>
+            <ol>
+                <li>A mutable reference to the current Level</li>
+                <li>A mutable reference to the current UI</li>
+                <li>A mutable reference to the current Terminal Manager (for direct UI/IO operations on the terminal)</li>
+            </ol>
+            <p>This <code>InventoryCommand</code> then creates the</p>
+            <ol>
+                <li>CharacterInfoView</li>
+                <li>CharacterInfoFrameHandler (along with it's underlying ContainerFrameHandler(s))</li>
+            </ol>
+            <p>The "View" and "FrameHandler"(s) take over control at this point once we call <code>begin(..)</code></p>
+<pre class="blog-codeblock">
+<code class="language-rust">let mut character_info_view = CharacterInfoView { character: player, ui: &mut self.ui, terminal_manager: &mut self.terminal_manager, frame_handler, callback: Box::new(|_| {None}) };
+character_info_view.set_callback(Box::new(|data| {
+    let mut current_inventory = level.characters.get_player_mut().unwrap().get_inventory_mut().clone();
+    handle_callback(CallbackState { level, container: Some(&mut current_inventory), data })
+}));
+match character_info_view.begin() {
+    Ok(_) => {
+        updated_inventory = character_info_view.frame_handler.container_frame_handlers.get(0).unwrap().container.clone();
+    },
+    Err(e) => {
+        return Err(ErrorWrapper::from(e))
+    }
+}
+</code>
+</pre>
+            <p>The <code>CharacterInfoView</code> then takes complete control of the I/O and rendering from this point, and is responsible for:</p>
+            <ol>
+                <li>Rendering the "base" UI that's visible by default (the main bordered window, the stat bars, the console window, etc.)</li>
+                <li>calling the CharacterInfoFrameHandler with the relevant state to allow it to render to the UI</li>
+                <li>Blocking for input / handling input (including passing anything not handled by the view down to the relevant frame handler, which is the majority of inputs)</li>
+            </ol>
+            <p>As you can see, this is very much a simple stateful design with different "views" or "contexts" that take control via an IO loop</p>
+            <p>Actions within the CharacterInfoView such as moving items modify the world state via callbacks. The CharacterInfoView calls <code>handle_input(..)</code> on the frame handler (the underlying ContainerFrameHandler), which then returns a result which is passed into a pre-registered callback function on the command in order to update the world state</p>
+<pre class="blog-codeblock">
+<code class="language-rust">// Within: inventory_command.rs
+// Registering the callback to the command when creating the view
+let mut character_info_view = CharacterInfoView { character: player, ui: &mut self.ui, terminal_manager: &mut self.terminal_manager, frame_handler, callback: Box::new(|_| {None}) };
+            character_info_view.set_callback(Box::new(|data| {
+                let mut current_inventory = level.characters.get_player_mut().unwrap().get_inventory_mut().clone();
+                handle_callback(CallbackState { level, container: Some(&mut current_inventory), data })
+            }));
+
+// Within: character_info_view.rs
+// and later.. the view triggering the callback
+fn trigger_callback(&mut self, data: ContainerFrameHandlerInputResult) {
+    let result = (self.callback)(data);
+    self.handle_callback_result(result);
+}
+</code>
+</pre>
+            <p>This works fine but has several caveats:</p>
+            <ol>
+                    <li>Rendering of the UI only happens on each loop passthrough (as the View has sole ownership over the UI and blocks for input before looping again). If we wanted to add background animations / effects this would be very difficult if they are not just using terminal builtins (like flashing characters)</li>
+                    <li>There is a lot of "wiring" that must be done to ensure the correct flow of callbacks / rendering / IO</li>
+                    <li>Each "view" is completely responsible for rendering the entire "frame" (the entire screen you see), so  there's likely to be a lot of duplicated boilerplate code (even if using utils) just to render everything else first</li>
+            </ol>
+            <h2>Redesigning this</h2>
+            <p>Due to the constraints outlines above, I wanted to implement an "Event Based" system which works like so:</p>
+            <ol>
+                <li>A "Command" such as <code>CharacterInfoCommand</code> which stores the Level, UI, and Terminal Manager as before with <code>InventoryCommand</code></li>
+                <li>
+                    <a href="https://docs.rs/tokio/latest/tokio/sync/mpsc/fn.unbounded_channel.html">A Tokio channel</a> is created to allow communicating between the command and UI elements
+                    <pre class="blog-codeblock"><code class="language-rust">// This is a special channel designed to allow widget data to send events back to this command
+// So that we can properly perform actions like closing the container display, opening a child container or taking items
+let (container_event_sender, container_event_receiver) = mpsc::unbounded_channel();</code></pre>
+                    The sender and receiver in this channel are passed around / hooked up where required to allow listening for / sending of events without the need for IO blocking (so we can render asynchronously!)
+                </li>
+                <li>We create a ratatui <a href="https://ratatui.rs/concepts/widgets/#statefulwidget">StatefulWidget</a> which can be directly rendered to the screen by the ratatui TUI library I use (instead of only using some custom widgets, ratatui builtin widgets, or direct terminal rendering like the original ARQ did)</li>
+                <li>The CharacterInfoWidget is added the generic UI code:
+                    <pre class="blog-codeblock"><code class="language-rust">// Add the container widget to the UI
+let stateful_widgets = self.ui.get_stateful_widgets_mut();
+stateful_widgets.push(StatefulWidgetType::CharacterInfo(character_info_widget));</code></pre>
+                </li>
+                <li>The Command uses a new <code>CharacterInfoWidgetData</code> which holds the "state" for the CharacterInfoWidget. This widget data is then passed to the UI code when calling to re-render. This generic UI code then renders all widgets (including our newly added CharacterInfoWidget) and passes this data to it
+<pre class="blog-codeblock"><code class="language-rust">while running {
+    if let Some(widget_data) = &mut self.widget_data {
+        terminal_manager.terminal.draw(|frame| {
+            debug!("Rendering Character Info Screen");
+            ui.render(None, UIViewMode::CharacterInfo(widget_data.clone()), frame);
+        })?;
+    //...</code></pre>
+                </li>
+                <li>In order to handle keyboard inputs without blocking in the command, there's now a <code>TerminalEventHandler</code> which makes use of Termion's  <code>termion::async_stdin().events();</code> to get input events asynchronously and then send these along the channel sender</li>
+                <li>The CharacterInfoCommand will listen for events (such as keypressed) and pass those into the widget data for handling, the data model can then directly apply updates to the state before it is passed back to the UI for rendering. This way input or action you take such as moving up/down the inventory, or dropping items, is sent along the channels.</li>
+                <li>The Command keeps control over the program flow via the running loop until you close the character info view, much like the previous "View" would have done. As the command has access to the level, any changes in state can be persisted to the game world here.</li>
+            </ol>
+            <p>This approach has several advantages over the old one:</p>
+            <ol>
+                <li>Rendering of the UI can theoretically be done asynchronously (the command runs asynchronously and can choose whether to block for input from a channel or not). This opens the door to future animations or just updating different widgets in the background</li>
+                <li>Everything that was previously a View / Frame Handler can be converted into a <a href="https://ratatui.rs/concepts/widgets/#statefulwidget">StatefulWidget</a> and "registered" with the main UI code, allowing multiple widgets to be rendered at the same time automatically. This also means we no longer have to worry about "bootstrapping" the UI and rendering everything else before our specific components</li>
+                <li>Much less wiring is needed for input / event handling as we can just send/receive on the relevant channel. Multiple copies of a channel sender can also be used to allow child UI components to be able to send events in the same way as parents (instead of needing to proxy / pass data up and down the stack)</li>
+            </ol>
+        </div>
+    </div>
+    <script src="/js/highlight.js" type="module"></script>
+</body>
+
+</html>

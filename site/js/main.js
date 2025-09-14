@@ -63,11 +63,12 @@ async function addCommonHeaderContent() {
 }
 
 async function onPageLoad() {
-  addCommonHeaderContent();
   addCommonBodyContent();
   // TODO implement local storage / consent banner
   //timeBasedChanges();
 }
 
+// Load header content first for styling!
+addCommonHeaderContent().then(r => {});
 document.addEventListener("DOMContentLoaded", onPageLoad);
 
