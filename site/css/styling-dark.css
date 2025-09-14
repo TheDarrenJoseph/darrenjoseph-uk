@@ -67,6 +67,15 @@ a:hover {
     padding-bottom: 2rem;
 }
 
+.blog-meta {
+    color: gray;
+    text-align: center;
+}
+
+.blog-title {
+    text-align: center;
+}
+
 .blog-codeblock {
     width: 95%;
 }
