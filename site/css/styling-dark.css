@@ -28,9 +28,9 @@ a:visited {
 }
 
 a:hover {
-  color: lightseagreen;
+  color: green;
   text-decoration: underline;
-  text-decoration-color: lightseagreen;
+  text-decoration-color: green;
 }
 
 .nav-link {
@@ -56,7 +56,6 @@ a:hover {
   text-decoration: none !important;
 }
 
-
 .projects-image {
   width: 95%;
   padding-bottom: 2rem;
@@ -81,9 +80,21 @@ a:hover {
 }
 
 /* Always ensure badge sizing as they're not meant to stretch */
-.medium-badge {
-  width: 88px;
-  height: 31px;
+.link-badge {
+  color: black !important;
+  text-decoration: none !important;
+  width: 88px !important;
+  height: 31px !important;
+  background-color: white;
+  border: 2px solid black;
+}
+
+.link-badge:hover {
+  color: green !important;
+  background-color: black;
+  text-decoration: none;
+  text-decoration-color: green;
+  border-bottom: 2px solid green;
 }
 
 /* For icons in paragraphs/inline with text */

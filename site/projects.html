@@ -29,14 +29,13 @@
     </ul>
     <p>Moving over to Rust went really well, and I was able to redesign quite a lot of things from the ground up, and make some improvements on the original:</p>
     <ul>
-      <li>Display management, ARQ-Rust now uses a "View" (complete UI control, I/O looping) and "Framehandler" (Dumb view that draws a model to a screen frame) system</li>
-      <li>An improved start/settings menu with custom widgets</li>
-      <li>Music support</li>
+      <li>Display state management - Handing over control of the game state (Level), UI, and IO loop via View/Command patterns is much more explicit through mutable borrows</li>
+      <li>An improved start/settings menu with custom widgets - I was able to make use of ratatui widgets for this and other screens</li>
+      <li>Music support - Music is done via rodio to handle to audio streams and an async tokio task to handle playing music in the background</li>
     </ul>
     <p>This is still under development currently, here are some developmental screenshots to give an idea of the project:</p>
-    <img class="projects-image" src="img/arq-gameplay-1.png" alt="ARQ Gameplay, on the map view">
-    <img class="projects-image" src="img/arq-inventory.png" alt="ARQ Gameplay, in the inventory view">
-    <img class="projects-image" src="img/arq-settings.png" alt="ARQ Settings Menu, showing fog-of-war, map random seed, and music volume settings.">
+    <img class="projects-image" src="img/arq_map_view_example.png" alt="ARQ Gameplay, on the map view">
+    <img class="projects-image" src="img/arq_inventory_view_example.png" alt="ARQ Gameplay, in the inventory view">
     <hr>
     <h2>purses - <a href="https://github.com/TheDarrenJoseph/purses/tree/master">GitHub</a></h2>
     <p>purses (A portmanteau of PulseAudio and curses) is a text-based UI audio visualiser meant for Linux command-line usage</p>
